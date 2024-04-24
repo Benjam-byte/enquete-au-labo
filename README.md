@@ -1,6 +1,6 @@
-# Simple HTML Project
+# Simple Leonard Chat Bot
 
-This is a basic HTML project that demonstrates the structure of an HTML file. It includes a simple HTML file with some basic content.
+This is a basic HTML project that demonstrates the Idea.
 
 ## Launching the Project
 
@@ -8,9 +8,7 @@ To launch this project, follow these steps:
 
     Clone the Repository: Clone this repository to your local machine using the following command:
 
-    bash
-
-    git clone https://github.com/Benjam-byte/enquete-au-labo.git
+    `git clone https://github.com/Benjam-byte/enquete-au-labo.git`
 
     Open with Visual Studio Code: Open the project folder in Visual Studio Code.
 
@@ -29,8 +27,9 @@ To launch this project, follow these steps:
 The project structure is as follows:
 
     index.html: This is the main HTML file containing the basic structure of the webpage.
-    (Add more files if your project has additional components or pages)
+    fetchJsonObject.ts : Contain the discussion content 
+    asset : Contain every ressource used in the project 
 
 ## About
 
-This project is created for be used in Enquete au labo.
+This project is created for be used in Enquete au labo. produced by Yellow Mangow
