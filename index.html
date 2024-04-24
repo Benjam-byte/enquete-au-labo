@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="icon" type="image/png" href="asset/icon/message-de-chat.png" />
+    <script type="module" src="main.js"></script>
+    <script type="module" src="fetchJsonObject.js"></script>
+    <title>Messager</title>
+  </head>
+  <body
+    onkeydown="activite_detectee = true"
+    onmousemove="activite_detectee = true"
+    onclick="activite_detectee = true"
+  >
+    <div class="parent">
+      <div class="side-menu">
+        <img
+          class="icon side-icon top-margin icon-selected"
+          src="./asset/icon/message-de-chat.png"
+          alt="chat"
+        />
+        <img
+          class="icon side-icon"
+          src="./asset/icon/cadeau.png"
+          alt="cadeau"
+        />
+      </div>
+      <div class="chat-selector">
+        <div class="header">
+          <h1>Discussions</h1>
+          <input type="text" placeholder="Rechercher (Ctrl+K)" />
+          <div class="carousel">
+            <img class="icon cctv" src="asset/icon/cctv.png" alt="cam" />
+          </div>
+        </div>
+        <div class="human-card selected">
+          <img
+            class="human-icon"
+            src="asset/image/inventeur.jpg"
+            alt="un humain"
+          />
+          <div>
+            <h4>Léonard Da Silva</h4>
+            <span>
+              <p class="small-text spaces">Vous: bla...</p>
+              <p class="small-text">17:46</p>
+            </span>
+          </div>
+          <img
+            class="icon validate-icon"
+            src="asset/icon/verifie.png"
+            alt="valid"
+          />
+        </div>
+        <div class="human-card">
+          <img class="human-icon" src="asset/image/ymg.jpg" alt="un humain" />
+          <div>
+            <h4>Yellow mangow</h4>
+            <span>
+              <p class="small-text spaces">Vous: love...</p>
+              <p class="small-text">12:16</p>
+            </span>
+          </div>
+          <img
+            class="icon validate-icon"
+            src="asset/icon/verifie.png"
+            alt="valid"
+          />
+        </div>
+      </div>
+      <div class="main-chat">
+        <div class="main-header">
+          <div class="main-card">
+            <img
+              class="main-card-icon"
+              src="asset/image/inventeur.jpg"
+              alt="human"
+            />
+            <div>
+              <h4>Léonard Da Silva</h4>
+              <p class="small-text">En ligne il y a 8m</p>
+            </div>
+          </div>
+          <div class="icon-list">
+            <img class="icon" src="asset/icon/appel.png" alt="telephone" />
+            <img class="icon" src="asset/icon/camera-video.png" alt="camera" />
+            <img
+              class="icon"
+              src="asset/icon/recherche-a-la-loupe.png"
+              alt="loupe"
+            />
+            <img
+              class="icon"
+              src="asset/icon/trois-petits-points.png"
+              alt="loupe"
+            />
+          </div>
+        </div>
+        <div class="main-user-zone">
+          <dialog id="confirmationDialog">
+            <button aria-label="Close modal" id="buttonCloseX">✖</button>
+
+            <h1>Inactivité prolongé remarqué</h1>
+            <p>Souhaitez vous vous reconnectez ?</p>
+
+            <button id="buttonOk" class="button">Reconnection</button>
+            <button id="buttonClose" class="button">Fermer</button>
+          </dialog>
+          <div class="main-message"></div>
+          <div class="main-input">
+            <div class="main-button"></div>
+            <div class="input-field">
+              <input class="input" />
+              <img
+                id="send-icon"
+                class="icon"
+                src="asset/icon/envoyer-le-message.png"
+                alt="send"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+<script type="module">
+  //--------------------------- Import ----------------------
+  import {
+    rawSectionList,
+    rawMessageList,
+    rawResponseList,
+  } from "./fetchJsonObject.js";
+  import { Node } from "./node.js";
+
+  console.log(rawMessageList);
+  //----------------------------- Init Object ------------------------------------
+
+  const sectionList = rawSectionList.map((section) => {
+    return section.map(
+      (node) =>
+        new Node(
+          node,
+          rawMessageList["" + node.sectionId + node.choiceId],
+          rawResponseList["" + node.sectionId + node.choiceId]
+        )
+    );
+  });
+
+  document.querySelector("#send-icon").onclick = function () {
+    emitUserMessage();
+  };
+
+  //------------------------------- Timeout -------------------------------------
+  let activite_detectee = false;
+  const intervalle = 3 * 60 * 1000;
+
+  function testerActivite() {
+    if (activite_detectee) {
+      activite_detectee = false;
+    } else {
+      statut("inactif");
+    }
+    setTimeout(testerActivite, intervalle);
+  }
+
+  function setActiviteDectetee() {
+    activite_detectee = true;
+  }
+
+  function statut(statut) {
+    if (statut === "inactif") confirmationDialog.showModal();
+  }
+
+  setTimeout(testerActivite, intervalle);
+
+  document.addEventListener("click", setActiviteDectetee);
+  document.addEventListener("mousemove", setActiviteDectetee);
+
+  const confirmationDialog = document.querySelector("#confirmationDialog");
+  const buttonOk = document.querySelector("#buttonOk");
+  const buttonClose = document.querySelector("#buttonClose");
+  const buttonCloseX = document.querySelector("#buttonCloseX");
+
+  function handleClose() {
+    confirmationDialog.close();
+  }
+
+  buttonOk.addEventListener("click", () => {
+    handleClose();
+    location.reload();
+  });
+
+  // button2
+  buttonClose.addEventListener("click", () => {
+    handleClose();
+  });
+
+  // button3
+  buttonCloseX.addEventListener("click", () => {
+    handleClose();
+  });
+
+  //------------------------------- Global object --------------------------------
+  const session = {
+    isStarted: false,
+    sectionId: 0,
+    choiceId: 0,
+  };
+
+  function start() {
+    session.isStarted = true;
+    initQuestion();
+  }
+
+  function addResponse() {
+    const mainDiv = document.querySelector(".main-message");
+    sectionList[session.sectionId][session.choiceId]
+      .getResponselist()
+      .forEach((response) => {
+        if (response.startsWith("$")) {
+          const responseParagraph = document.createElement("img");
+          responseParagraph.classList.add("response");
+          responseParagraph.src =
+            "./asset/lore/" + response.substring(1) + ".jpg";
+          mainDiv.appendChild(responseParagraph);
+        } else {
+          const responseParagraph = document.createElement("p");
+          responseParagraph.classList.add("response");
+          responseParagraph.textContent = response;
+          mainDiv.appendChild(responseParagraph);
+        }
+      });
+    session.sectionId =
+      sectionList[session.sectionId][session.choiceId].getGoToId();
+    mainDiv.scrollTop = mainDiv.scrollHeight;
+    initQuestion();
+  }
+
+  function displayInputField() {
+    const inputField = document.querySelector(".input-field");
+    inputField.style.display = "flex";
+  }
+
+  function hideInputField() {
+    const inputField = document.querySelector(".input-field");
+    const input = document.querySelector(".input");
+    if (!inputField) return;
+    input.value = "";
+    inputField.style.display = "none";
+  }
+
+  function displayWaitingMessage() {
+    const mainDiv = document.querySelector(".main-message");
+    var img = document.createElement("img");
+    img.setAttribute("class", "waiting-dot");
+    img.setAttribute("src", "asset/gif/3dot.gif");
+    img.setAttribute("alt", "3dot");
+    mainDiv.appendChild(img);
+  }
+
+  function hideWaitingMessage() {
+    var waitingmessage = document.querySelector(".waiting-dot");
+    var mainDiv = waitingmessage.parentNode;
+    mainDiv.removeChild(waitingmessage);
+  }
+
+  function addMessage(content) {
+    const mainDiv = document.querySelector(".main-message");
+    const messageParagraph = document.createElement("p");
+    messageParagraph.classList.add("message");
+    messageParagraph.textContent = content;
+    mainDiv.appendChild(messageParagraph);
+    displayWaitingMessage();
+    mainDiv.scrollTop = mainDiv.scrollHeight;
+    disableAllButton();
+    setTimeout(() => {
+      hideWaitingMessage();
+      addResponse();
+      EnableAllButton();
+    }, 2000);
+  }
+
+  function disableAllButton() {
+    const mainDiv = document.querySelector(".main-button");
+    const boutons = mainDiv.querySelectorAll("button");
+    boutons.forEach((bouton) => {
+      bouton.disabled = true;
+    });
+  }
+
+  function EnableAllButton() {
+    const mainDiv = document.querySelector(".main-button");
+    const boutons = mainDiv.querySelectorAll("button");
+    boutons.forEach((bouton) => {
+      bouton.disabled = false;
+    });
+  }
+
+  function addInputField() {
+    const mainDiv = document.querySelector(".main-input");
+    const input = document.createElement("input");
+    input.classList.add("input");
+    mainDiv.appendChild(input);
+  }
+
+  function addButton(content, choiceId) {
+    const mainDiv = document.querySelector(".main-button");
+    const button = document.createElement("button");
+    button.classList.add("button");
+    button.textContent = content;
+    button.onclick = function () {
+      session.choiceId = choiceId;
+      addMessage(content);
+    };
+    mainDiv.appendChild(button);
+  }
+
+  function removeAllButton() {
+    const mainDiv = document.querySelector(".main-button");
+    while (mainDiv.firstChild) {
+      mainDiv.removeChild(mainDiv.firstChild);
+    }
+  }
+
+  function initQuestion() {
+    removeAllButton();
+    hideInputField();
+    sectionList[session.sectionId].forEach((choice, index) => {
+      if (choice.getIsInput()) {
+        displayInputField();
+      } else {
+        addButton(choice.getMessage(), index);
+      }
+    });
+  }
+
+  function emitUserMessage() {
+    const input = document.querySelector(".input");
+    const userMessage = input.value;
+    const currentNode = sectionList[session.sectionId][0];
+    session.choiceId = currentNode.isGoodInputText(userMessage);
+    addMessage(userMessage);
+  }
+  //---------------------------------- MAIN ----------------------------------------
+  start();
+</script>
