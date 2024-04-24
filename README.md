@@ -5,12 +5,10 @@ This is a basic HTML project that demonstrates the Idea.
 ## Launching the Project
 
 To launch this project, follow these steps:
+Clone the Repository: Clone this repository to your local machine using the following command:
+`git clone https://github.com/Benjam-byte/enquete-au-labo.git`
 
-    Clone the Repository: Clone this repository to your local machine using the following command:
-
-    `git clone https://github.com/Benjam-byte/enquete-au-labo.git`
-
-    Open with Visual Studio Code: Open the project folder in Visual Studio Code.
+Open with Visual Studio Code: Open the project folder in Visual Studio Code.
 
     Install Live Server Extension: If you haven't already installed the Live Server extension, you can do so by following these steps:
         Open Visual Studio Code.
